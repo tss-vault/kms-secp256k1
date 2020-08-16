@@ -34,8 +34,9 @@ impl ChainCode1 {
         party2_first_message_public_share: &GE,
     ) -> ChainCode1 {
         ChainCode1 {
-            chain_code: compute_pubkey(ec_key_pair, party2_first_message_public_share)
-                .bytes_compressed_to_big_int(),
+            // chain_code: compute_pubkey(ec_key_pair, party2_first_message_public_share)
+            //     .bytes_compressed_to_big_int(), // FIXED: Edward Zhan
+            chain_code: compute_pubkey(ec_key_pair, party2_first_message_public_share).x_coor().unwrap(),
         }
     }
 }
