@@ -59,7 +59,7 @@ pub fn hd_key(
     mut location_in_hir: Vec<BigInt>,
     pubkey: &GE,
     chain_code_bi: &BigInt,
-) -> (GE, FE, GE) {
+) -> (GE, FE, BigInt) {
     let mask = BigInt::from(2).pow(256) - BigInt::one();
     // let public_key = self.public.q.clone();
 
@@ -70,27 +70,29 @@ pub fn hd_key(
     let f_l = &f >> 256;
     let f_r = &f & &mask;
     let f_l_fe: FE = ECScalar::from(&f_l);
-    let f_r_fe: FE = ECScalar::from(&f_r);
+    // let f_r_fe: FE = ECScalar::from(&f_r);
 
-    let bn_to_slice = BigInt::to_vec(chain_code_bi);
-    let chain_code = GE::from_bytes(&bn_to_slice[0..31]).unwrap() * &f_r_fe;
+    // let bn_to_slice = BigInt::to_vec(chain_code_bi);
+    // let chain_code = GE::from_bytes(&bn_to_slice[1..33]).unwrap() * &f_r_fe;
+
     let pub_key = pubkey * &f_l_fe;
 
     let (public_key_new_child, f_l_new, cc_new) =
         location_in_hir
             .iter()
-            .fold((pub_key, f_l_fe, chain_code), |acc, index| {
+            .fold((pub_key, f_l_fe, f_r), |acc, index| {
                 let pub_key_bi = acc.0.bytes_compressed_to_big_int();
                 let f = hmac_sha512::HMacSha512::create_hmac(
-                    &acc.2.bytes_compressed_to_big_int(),
+                    //&acc.2.bytes_compressed_to_big_int(),
+                    &acc.2,
                     &[&pub_key_bi, index],
                 );
                 let f_l = &f >> 256;
                 let f_r = &f & &mask;
                 let f_l_fe: FE = ECScalar::from(&f_l);
-                let f_r_fe: FE = ECScalar::from(&f_r);
+                // let f_r_fe: FE = ECScalar::from(&f_r);
 
-                (acc.0 * &f_l_fe, f_l_fe * &acc.1, &acc.2 * &f_r_fe)
+                (acc.0 * &f_l_fe, f_l_fe * &acc.1, f_r)
             });
     (public_key_new_child, f_l_new, cc_new)
 }
