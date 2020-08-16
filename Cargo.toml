@@ -34,7 +34,8 @@ tag = "v0.2.3"
 
 [dependencies.multi-party-ecdsa]
 git = "https://github.com/tss-vault/multi-party-ecdsa"
-rev = "0a4931b8247b2f187dcb9ff7c7c096444feadcc3"
+branch = "gg20-aifi"
+#rev = "0a4931b8247b2f187dcb9ff7c7c096444feadcc3"
 
 [dependencies.centipede]
 git = "https://github.com/KZen-networks/centipede"
