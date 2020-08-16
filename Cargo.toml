@@ -1,6 +1,6 @@
 [package]
 name = "kms"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
     "Omer <omer@kzencorp.com>",
     "Gary <gary@kzencorp.com>"
@@ -33,7 +33,7 @@ features =  ["ec_secp256k1"]
 tag = "v0.2.3"
 
 [dependencies.multi-party-ecdsa]
-git = "https://github.com/KZen-networks/multi-party-ecdsa"
+git = "https://github.com/tss-vault/multi-party-ecdsa"
 rev = "0a4931b8247b2f187dcb9ff7c7c096444feadcc3"
 
 [dependencies.centipede]
