@@ -218,8 +218,8 @@ mod tests {
         );
         sign_party_one_second_message.expect("bad signature");
 
-        let new_party_one_master_key = party_one_master_key.get_child(vec![BigInt::from(10)]);
-        let new_party_two_master_key = party_two_master_key.get_child(vec![BigInt::from(10)]);
+        let new_party_one_master_key = party_one_master_key.get_child(vec![10]);
+        let new_party_two_master_key = party_two_master_key.get_child(vec![10]);
 
         // sign with child keys
         let sign_party_two_second_message = new_party_two_master_key.sign_second_message(
@@ -260,8 +260,8 @@ mod tests {
             test_rotation(party_one_master_key, party_two_master_key);
 
         //get child:
-        let rc_party_one_master_key = rotate_party_one_master_key.get_child(vec![BigInt::from(10)]);
-        let rc_party_two_master_key = rotate_party_two_master_key.get_child(vec![BigInt::from(10)]);
+        let rc_party_one_master_key = rotate_party_one_master_key.get_child(vec![10]);
+        let rc_party_two_master_key = rotate_party_two_master_key.get_child(vec![10]);
 
         // sign with rotated and child keys
         let message = BigInt::from(1234);
@@ -295,9 +295,9 @@ mod tests {
         let (party_one_master_key, party_two_master_key) = test_key_gen();
 
         let new_party_two_master_key =
-            party_two_master_key.get_child(vec![BigInt::from(10), BigInt::from(5)]);
+            party_two_master_key.get_child(vec![10, 5]);
         let new_party_one_master_key =
-            party_one_master_key.get_child(vec![BigInt::from(10), BigInt::from(5)]);
+            party_one_master_key.get_child(vec![10, 5]);
         assert_eq!(
             new_party_one_master_key.public.q,
             new_party_two_master_key.public.q

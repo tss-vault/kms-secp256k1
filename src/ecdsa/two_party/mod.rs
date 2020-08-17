@@ -55,8 +55,20 @@ pub mod party1;
 pub mod party2;
 mod test;
 
+fn combine_pubkey_and_index(pubkey: &BigInt, index: &u32) -> BigInt {
+    
+    let mut pk_vec = BigInt::to_vec(&pubkey);
+    let index_bz = index.to_le_bytes();
+    let mut index_vec = index_bz.to_vec();
+    pk_vec.append(&mut index_vec);
+
+    let pk_and_idx_bz = &pk_vec[0..];
+    let pk_and_idx_bi = BigInt::from(pk_and_idx_bz);
+    return pk_and_idx_bi;
+}
+
 pub fn hd_key(
-    mut location_in_hir: Vec<BigInt>,
+    mut location_in_hir: Vec<u32>,
     pubkey: &GE,
     chain_code_bi: &BigInt,
 ) -> (GE, FE, BigInt) {
@@ -66,7 +78,8 @@ pub fn hd_key(
     // calc first element:
     let first = location_in_hir.remove(0);
     let pub_key_bi = pubkey.bytes_compressed_to_big_int();
-    let f = hmac_sha512::HMacSha512::create_hmac(&chain_code_bi, &[&pub_key_bi, &first]);
+    let pub_key_and_idx_bi = combine_pubkey_and_index(&pub_key_bi, &first);
+    let f = hmac_sha512::HMacSha512::create_hmac(&chain_code_bi, &[&pub_key_and_idx_bi]);
     let f_l = &f >> 256;
     let f_r = &f & &mask;
     let f_l_fe: FE = ECScalar::from(&f_l);
@@ -82,10 +95,11 @@ pub fn hd_key(
             .iter()
             .fold((pub_key, f_l_fe, f_r), |acc, index| {
                 let pub_key_bi = acc.0.bytes_compressed_to_big_int();
+                let pub_key_and_idx_bi = combine_pubkey_and_index(&pub_key_bi, index);
                 let f = hmac_sha512::HMacSha512::create_hmac(
                     //&acc.2.bytes_compressed_to_big_int(),
                     &acc.2,
-                    &[&pub_key_bi, index],
+                    &[&pub_key_and_idx_bi],
                 );
                 let f_l = &f >> 256;
                 let f_r = &f & &mask;
