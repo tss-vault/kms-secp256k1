@@ -17,6 +17,7 @@ use curv::elliptic::curves::traits::{ECPoint, ECScalar};
 use curv::{BigInt, FE, GE};
 use multi_party_ecdsa::protocols::two_party_ecdsa::lindell_2017::{party_one, party_two};
 use paillier::*;
+use curv::elliptic::curves::*;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Party1Public {
@@ -67,6 +68,15 @@ fn combine_pubkey_and_index(pubkey: &BigInt, index: &i32) -> BigInt {
     return pk_and_idx_bi;
 }
 
+fn compute_child_pubkey(pubkey: &GE, scalar: &BigInt) -> GE {
+    let pub_key = pubkey.clone();
+    let ctx = secp256_k1::get_context();
+    let scalar_bz = &BigInt::to_vec(&scalar);
+    let ok = pub_key.get_element().add_exp_assign(&ctx, &scalar_bz).is_ok();
+    if ok {}
+    return pub_key;
+}
+
 pub fn hd_key(
     mut location_in_hir: Vec<i32>,
     pubkey: &GE,
@@ -88,7 +98,8 @@ pub fn hd_key(
     // let bn_to_slice = BigInt::to_vec(chain_code_bi);
     // let chain_code = GE::from_bytes(&bn_to_slice[1..33]).unwrap() * &f_r_fe;
 
-    let pub_key = pubkey * &f_l_fe;
+    // let pub_key = pubkey * &f_l_fe;
+    let pub_key = compute_child_pubkey(pubkey, &f_l);
 
     let (public_key_new_child, f_l_new, cc_new) =
         location_in_hir
@@ -105,8 +116,9 @@ pub fn hd_key(
                 let f_r = &f & &mask;
                 let f_l_fe: FE = ECScalar::from(&f_l);
                 // let f_r_fe: FE = ECScalar::from(&f_r);
-
-                (acc.0 * &f_l_fe, f_l_fe * &acc.1, f_r)
+                let pub_key = compute_child_pubkey(pubkey, &f_l);
+                (pub_key, f_l_fe, f_r)
+                // (acc.0 * &f_l_fe, f_l_fe * &acc.1, f_r)
             });
     (public_key_new_child, f_l_new, cc_new)
 }
