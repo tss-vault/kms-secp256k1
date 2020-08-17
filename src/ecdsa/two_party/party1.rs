@@ -72,7 +72,7 @@ impl MasterKey1 {
         }
     }
 
-    pub fn get_child(&self, location_in_hir: Vec<u32>) -> MasterKey1 {
+    pub fn get_child(&self, location_in_hir: Vec<i32>) -> MasterKey1 {
         let (public_key_new_child, f_l_new, cc_new) =
             hd_key(location_in_hir, &self.public.q, &self.chain_code);
 

@@ -55,7 +55,7 @@ pub mod party1;
 pub mod party2;
 mod test;
 
-fn combine_pubkey_and_index(pubkey: &BigInt, index: &u32) -> BigInt {
+fn combine_pubkey_and_index(pubkey: &BigInt, index: &i32) -> BigInt {
     
     let mut pk_vec = BigInt::to_vec(&pubkey);
     let index_bz = index.to_le_bytes();
@@ -68,7 +68,7 @@ fn combine_pubkey_and_index(pubkey: &BigInt, index: &u32) -> BigInt {
 }
 
 pub fn hd_key(
-    mut location_in_hir: Vec<u32>,
+    mut location_in_hir: Vec<i32>,
     pubkey: &GE,
     chain_code_bi: &BigInt,
 ) -> (GE, FE, BigInt) {
